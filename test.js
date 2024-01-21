@@ -1,0 +1,5 @@
+const { sendMessage } = require('./sqs')
+sendMessage('teste').then(r => console.log(r))
+const { send } = require('./rabbit')
+send('teste').then(r => console.log(r))
+require('./app')
