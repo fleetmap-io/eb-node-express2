@@ -46,11 +46,11 @@ if (cluster.isMaster) {
       await rabbit.send(message)
       res.end()
     } catch (e) {
-      console.error(message, e)
+      console.error(message, e.message)
       try {
         await sqs.sendMessage(message, process.env.SQS_DLQ)
       } catch (e) {
-        console.error(e)
+        console.error(e.message)
       }
       res.status(500).end()
     }
@@ -63,7 +63,7 @@ if (cluster.isMaster) {
       await rabbit.send(message, 'E', 'E', 'eb-node-express-events')
       res.end()
     } catch (e) {
-      console.error(message, e)
+      console.error(message, e.message)
       res.status(500).end()
     }
   })
