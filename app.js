@@ -22,7 +22,7 @@ if (cluster.isMaster) {
 
   app.get('/', async (req, res) => {
     // load balancer health check
-    res.status(200).end()
+    res.send(`Worker ${cluster.worker.id} is up!`)
   })
 
   app.post('/push', async (req, res) => {
