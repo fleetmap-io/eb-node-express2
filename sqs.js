@@ -10,7 +10,7 @@ exports.sendBatch = (Entries) => {
 
 exports.sendMessage = async (MessageBody, queue = 'https://sqs.us-east-1.amazonaws.com/903002861645/pinme-backend-PushLocationsQueue-Dpzh8M9sLo5n', ignoreError = false) => {
   try {
-    return await client.send(new SendMessageCommand({
+    await client.send(new SendMessageCommand({
       MessageBody,
       QueueUrl: queue
     }))
