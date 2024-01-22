@@ -26,12 +26,12 @@ if (cluster.isMaster) {
   })
 
   app.post('/push', async (req, res) => {
+    const message = JSON.stringify(req.body)
     try {
-      const message = JSON.stringify(req.body)
       await sqs.sendMessage(message, process.env.SQS_EVENTS_QUEUE)
       res.end()
     } catch (e) {
-      console.error(e)
+      console.error(message, e.message)
       res.status(500).end()
     }
   })
@@ -41,7 +41,7 @@ if (cluster.isMaster) {
     try {
       const body = req.body
       if (body && body.device && body.device.attributes.integration) {
-        await sqs.sendMessage(process.env.SQS_POSITIONS_QUEUE)
+        await sqs.sendMessage(message, process.env.SQS_POSITIONS_QUEUE)
       }
       await rabbit.send(message)
       res.end()
