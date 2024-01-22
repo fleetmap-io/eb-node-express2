@@ -28,8 +28,7 @@ if (cluster.isMaster) {
   app.post('/push', async (req, res) => {
     try {
       const message = JSON.stringify(req.body)
-      await sqs.sendMessage(message, 'https://sqs.us-east-1.amazonaws.com/903002861645/pinme-backend-PushEventsQueue-FiP1MrYg0Id7')
-      await sqs.sendMessage(message, 'https://sqs.us-east-1.amazonaws.com/925447205804/push-events-queue', true)
+      await sqs.sendMessage(message, process.env.SQS_EVENTS_QUEUE)
       res.end()
     } catch (e) {
       console.error('ERROR', e)
@@ -42,15 +41,14 @@ if (cluster.isMaster) {
     try {
       const body = req.body
       if (body && body.device && body.device.attributes.integration) {
-        await sqs.sendMessage(message)
-        await sqs.sendMessage(message, 'https://sqs.us-east-1.amazonaws.com/925447205804/push-locations-queue', true)
+        await sqs.sendMessage(process.env.SQS_POSITIONS_QUEUE)
       }
       await rabbit.send(message)
       res.end()
     } catch (e) {
       console.error('ERROR', message, e)
       try {
-        await sqs.sendMessage(message, 'https://sqs.us-east-1.amazonaws.com/903002861645/Rabbit-DLQ')
+        await sqs.sendMessage(message, process.env.SQS_DLQ)
       } catch (e) {
         console.error('ERROR', e)
       }

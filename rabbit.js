@@ -1,6 +1,6 @@
 const amqplib = require('amqplib')
 let _connection = null
-let _channel = getChannel('eb-node-express')
+let _channel = getChannel('eb-node-express-2')
 createQueues('E', 'positions', 'P', 'events', 'E')
   .then().catch(e => console.error('ERROR', e))
 
