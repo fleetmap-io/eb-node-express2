@@ -9,7 +9,7 @@ if (cluster.isMaster) {
 
   cluster.on('exit', function (worker) {
     // Replace the terminated workers
-    console.error('ERROR ' + worker.id + ' died :(')
+    console.error(`worker ${worker.id} died :(`)
     cluster.fork()
   })
 } else {
@@ -31,7 +31,7 @@ if (cluster.isMaster) {
       await sqs.sendMessage(message, process.env.SQS_EVENTS_QUEUE)
       res.end()
     } catch (e) {
-      console.error('ERROR', e)
+      console.error(e)
       res.status(500).end()
     }
   })
@@ -46,11 +46,11 @@ if (cluster.isMaster) {
       await rabbit.send(message)
       res.end()
     } catch (e) {
-      console.error('ERROR', message, e)
+      console.error(message, e)
       try {
         await sqs.sendMessage(message, process.env.SQS_DLQ)
       } catch (e) {
-        console.error('ERROR', e)
+        console.error(e)
       }
       res.status(500).end()
     }
@@ -63,13 +63,13 @@ if (cluster.isMaster) {
       await rabbit.send(message, 'E', 'E', 'eb-node-express-events')
       res.end()
     } catch (e) {
-      console.error('ERROR', message, e)
+      console.error(message, e)
       res.status(500).end()
     }
   })
 
   const port = process.env.PORT || 3000
   app.listen(port, function () {
-    console.error(`ERROR Worker ${cluster.worker.id} running at http://127.0.0.1:${port}/`)
+    console.log(`Worker ${cluster.worker.id} running at http://127.0.0.1:${port}/`)
   })
 }
