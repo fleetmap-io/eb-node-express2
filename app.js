@@ -1,5 +1,5 @@
 const cluster = require('cluster')
-const { sendToTraccar } = require('./sync')
+const { sendToTraccar, getCountry } = require('./sync')
 
 if (cluster.isMaster) {
   const cpuCount = require('os').cpus().length
@@ -47,7 +47,7 @@ if (cluster.isMaster) {
         // sync with the other traccar
         await sendToTraccar(device, position)
       } else {
-        console.log('ignoring  ', position.fixTime, position.attributes.source, device.name)
+        console.log('ignoring  ', position.fixTime, getCountry(position), position.attributes.source, device.name)
       }
       res.end()
     } catch (e) {

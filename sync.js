@@ -5,6 +5,9 @@ exports.forwarded = ({ position }) => {
   return position && position.attributes && !position.attributes.source
 }
 
+const getCountry = position => position && position.address && position.address.split(',').slice(-1)[0].trim()
+exports.getCountry = getCountry
+
 const sendToTraccar = (device, position) => {
   const pos = { ...position, ...position.attributes }
   delete pos.attributes
@@ -24,7 +27,7 @@ const sendToTraccar = (device, position) => {
   delete pos.course
   delete pos.network
   const url = `${baseUrl}/?id=${device.uniqueId}&` + Object.keys(pos).map(k => `${k}=${encodeURIComponent(pos[k])}`).join('&')
-  console.log('forwarding', position.fixTime, position.attributes.source, device.name)
+  console.log('forwarding', position.fixTime, getCountry(position), position.attributes.source, device.name)
   return axios.get(url)
 }
 
