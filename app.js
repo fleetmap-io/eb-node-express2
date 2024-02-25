@@ -1,4 +1,5 @@
 const cluster = require('cluster')
+const { sendToTraccar } = require('./sync')
 
 if (cluster.isMaster) {
   const cpuCount = require('os').cpus().length
@@ -35,11 +36,18 @@ if (cluster.isMaster) {
   app.post('/pushPositions', async (req, res) => {
     const message = JSON.stringify(req.body)
     try {
-      const body = req.body
-      if (body && body.device && body.device.attributes.integration) {
+      const { device, position } = req.body
+      if (device && device.attributes.integration) {
         await sqs.sendMessage(message, process.env.SQS_POSITIONS_QUEUE)
       }
+      position.attributes.source = 'eu-west-3'
+      // ignore forwarded positions (already sent to rabbit)
+      // if (position.attributes.source !== 'us-east-1-old') {
       await rabbit.send(message)
+      /* } else {
+        position.attributes.source = 'eu-west-3'
+        sendToTraccar(device, position)
+      } */
       res.end()
     } catch (e) {
       console.error(message, e.message)

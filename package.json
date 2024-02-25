@@ -5,6 +5,7 @@
   "dependencies": {
     "@aws-sdk/client-sqs": "latest",
     "amqplib": "^0.10.3",
+    "axios": "^1.6.7",
     "body-parser": "1.20.2",
     "express": "latest"
   },
