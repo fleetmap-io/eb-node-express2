@@ -23,7 +23,6 @@ const sendToTraccar = (device, position) => {
   pos.heading = pos.course
   delete pos.course
   delete pos.network
-  delete pos.priority
   const url = `${baseUrl}/?id=${device.uniqueId}&` + Object.keys(pos).map(k => `${k}=${encodeURIComponent(pos[k])}`).join('&')
   console.log(position.fixTime, position.attributes.source, device.name)
   return axios.get(url)
