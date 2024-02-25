@@ -24,7 +24,7 @@ const sendToTraccar = (device, position) => {
   delete pos.course
   delete pos.network
   const url = `${baseUrl}/?id=${device.uniqueId}&` + Object.keys(pos).map(k => `${k}=${encodeURIComponent(pos[k])}`).join('&')
-  console.log(position.fixTime, position.attributes.source, device.name)
+  console.log('forwarding', position.fixTime, position.attributes.source, device.name)
   return axios.get(url)
 }
 
