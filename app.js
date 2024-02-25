@@ -47,7 +47,7 @@ if (cluster.isMaster) {
         // sync with the other traccar
         await sendToTraccar(device, position)
       } else {
-        console.log('ignoring', position.attributes.source, device.name)
+        console.log('ignoring', position.fixTime, position.attributes.source, device.name)
       }
       res.end()
     } catch (e) {
