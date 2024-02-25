@@ -44,7 +44,7 @@ if (cluster.isMaster) {
       if (position.attributes.source !== 'us-east-1-old') {
         position.attributes.source ||= 'eu-west-3'
         await rabbit.send(JSON.stringify(req.body))
-        // await sendToTraccar(device, position)
+        await sendToTraccar(device, position)
       } else {
         console.log('ignoring', device.name)
       }
