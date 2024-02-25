@@ -40,10 +40,11 @@ if (cluster.isMaster) {
       if (device && device.attributes.integration) {
         await sqs.sendMessage(message, process.env.SQS_POSITIONS_QUEUE)
       }
-      // ignore forwarded positions (already sent to rabbit)
+      // ignore forwarded positions (coming from the other traccar and already sent to rabbit)
       if (position.attributes.source !== 'us-east-1-old') {
         position.attributes.source ||= 'eu-west-3'
         await rabbit.send(JSON.stringify(req.body))
+        // sync with the other traccar
         await sendToTraccar(device, position)
       } else {
         console.log('ignoring', position.attributes.source, device.name)
