@@ -40,14 +40,12 @@ if (cluster.isMaster) {
       if (device && device.attributes.integration) {
         await sqs.sendMessage(message, process.env.SQS_POSITIONS_QUEUE)
       }
-      position.attributes.source ||= 'eu-west-3'
       // ignore forwarded positions (already sent to rabbit)
-      // if (position.attributes.source !== 'us-east-1-old') {
-      await rabbit.send(JSON.stringify(req.body))
-      /* } else {
-        position.attributes.source = 'eu-west-3'
-        sendToTraccar(device, position)
-      } */
+      if (position.attributes.source !== 'us-east-1-old') {
+        position.attributes.source ||= 'eu-west-3'
+        await rabbit.send(JSON.stringify(req.body))
+        // await sendToTraccar(device, position)
+      }
       res.end()
     } catch (e) {
       console.error(message, e.message)
