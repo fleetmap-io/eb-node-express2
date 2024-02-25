@@ -46,7 +46,7 @@ if (cluster.isMaster) {
         await rabbit.send(JSON.stringify(req.body))
         await sendToTraccar(device, position)
       } else {
-        console.log('ignoring', device.name)
+        console.log('ignoring', position.attributes.source, device.name)
       }
       res.end()
     } catch (e) {
