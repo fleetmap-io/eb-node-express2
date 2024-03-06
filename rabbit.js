@@ -27,7 +27,7 @@ async function getChannel (name) {
     }
   }
   _connection = await amqplib.connect({
-    hostname: process.env.RABBIT_HOST,
+    hostname: 'b-94cf53fa-4254-4579-968e-17de8d933387.mq.us-east-1.amazonaws.com',
     port: 5671,
     protocol: 'amqps',
     username: 'rabbit',
