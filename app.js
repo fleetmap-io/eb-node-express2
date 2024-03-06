@@ -53,6 +53,7 @@ if (cluster.isMaster) {
     } catch (e) {
       console.error(message, e.message)
       try {
+
         await sqs.sendMessage(message, process.env.SQS_DLQ)
       } catch (e) {
         console.error(e.message)
