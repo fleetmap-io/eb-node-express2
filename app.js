@@ -11,6 +11,7 @@ if (cluster.isMaster) {
   })
 } else {
   const rabbit = require('./rabbit')
+  const rabbitForwarder = require('./rabbit-forwarder')
   const sqs = require('./sqs')
   const express = require('express')
   const bodyParser = require('body-parser')
@@ -44,8 +45,7 @@ if (cluster.isMaster) {
       if (position.attributes.source !== 'us-east-1-old') {
         position.attributes.source ||= 'eu-west-3'
         await rabbit.send(JSON.stringify(req.body))
-        // sync with the other traccar
-        await sendToTraccar(device, position)
+        await rabbitForwarder.send(JSON.stringify(req.body))
       } else {
         // console.log('ignoring  ', position.fixTime, getCountry(position), position.attributes.source, device.name)
       }
