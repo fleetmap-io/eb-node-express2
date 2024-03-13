@@ -11,7 +11,6 @@ if (cluster.isMaster) {
   })
 } else {
   const rabbit = require('./rabbit')
-  const rabbitForwarder = require('./rabbit-forwarder')
   const sqs = require('./sqs')
   const express = require('express')
   const bodyParser = require('body-parser')
@@ -41,14 +40,8 @@ if (cluster.isMaster) {
       if (device && device.attributes.integration) {
         await sqs.sendMessage(message, process.env.SQS_POSITIONS_QUEUE)
       }
-      // ignore forwarded positions (coming from the other traccar and already sent to rabbit)
-      if (position.attributes.source !== 'us-east-1-old') {
-        position.attributes.source ||= 'eu-west-3'
-        await rabbit.send(JSON.stringify(req.body))
-        await rabbitForwarder.send(JSON.stringify(req.body))
-      } else {
-        // console.log('ignoring  ', position.fixTime, getCountry(position), position.attributes.source, device.name)
-      }
+      position.attributes.source ||= 'eu-west-3'
+      await rabbit.send(JSON.stringify(req.body))
       res.end()
     } catch (e) {
       console.error(message, e.message)
