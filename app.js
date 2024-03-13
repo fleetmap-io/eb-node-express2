@@ -1,5 +1,4 @@
 const cluster = require('cluster')
-const { sendToTraccar, getCountry } = require('./sync')
 
 if (cluster.isMaster) {
   const cpuCount = require('os').cpus().length
