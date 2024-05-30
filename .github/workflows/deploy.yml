@@ -17,7 +17,7 @@ jobs:
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID_1 }}
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY_1 }}
           application_name: eb-node-express
-          environment_name: eb-node-express
+          environment_name: Eb-node-express-env
           version_label: ${{ github.run_number }}
           region: us-east-1
           deployment_package: deploy.zip
