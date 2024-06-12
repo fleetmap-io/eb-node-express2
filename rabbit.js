@@ -38,11 +38,11 @@ async function getChannel (name) {
   return _connection.createConfirmChannel()
 }
 
-async function tryChannel (name, retries = 3) {
+async function tryChannel (name, retries = 2) {
   try {
     return await _channel
   } catch (e) {
-    console.error(retries, e)
+    console.error(retries, e.message)
     if (--retries) {
       _channel = getChannel(name)
       return tryChannel(name, retries)
@@ -55,6 +55,8 @@ const send = async (message, exchange = 'E', routingKey = 'P', name = 'eb-node-e
     channel.publish(exchange, routingKey, Buffer.from(message), { persistent: true })
     await channel.waitForConfirms()
   } catch (e) {
+    console.log(message)
+    console.error(retries, e.message)
     if (--retries) {
       _channel = getChannel(name)
       return send(message, exchange, routingKey, name, retries)
