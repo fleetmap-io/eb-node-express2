@@ -1,6 +1,6 @@
 {
   "name": "eb-node-express",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "private": true,
   "dependencies": {
     "@aws-sdk/client-sqs": "latest",
