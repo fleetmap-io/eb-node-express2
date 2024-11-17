@@ -46,7 +46,7 @@ if (cluster.isMaster) {
     try {
       healthCheck.position.attributes.instanceId = instanceId
       healthCheck.position.id = cluster.worker.id
-      healthCheck.position.serverTime = new Date().toUTCString()
+      healthCheck.position.serverTime = new Date().toISOString()
       await rabbit.send(JSON.stringify(healthCheck))
       res.send(`${instanceId} worker ${cluster.worker.id} is up!`)
     } catch (e) {
