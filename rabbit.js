@@ -8,14 +8,10 @@ function createQueues () {
 }
 
 async function _createQueues (exchange, positionsQueue, positionsKey, eventsQueue, eventsKey) {
-  try {
-    const channel = await _channel
-    channel.assertExchange(exchange, 'direct', { durable: true, autoDelete: false })
-    await createQueue(positionsQueue, exchange, positionsKey)
-    await createQueue(eventsQueue, exchange, eventsKey)
-  } catch (e) {
-    console.error('ERROR', 'createQueues', e.message)
-  }
+  const channel = await _channel
+  channel.assertExchange(exchange, 'direct', { durable: true, autoDelete: false })
+  await createQueue(positionsQueue, exchange, positionsKey)
+  await createQueue(eventsQueue, exchange, eventsKey)
 }
 
 async function createQueue (queueName, exchange, routingKey) {
