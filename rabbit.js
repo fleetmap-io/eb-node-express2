@@ -58,7 +58,12 @@ async function tryChannel (name, retries = 2) {
   } catch (e) {
     console.error(instanceId(), 'ERROR tryChannel, retries: ', retries, e.message)
     if (--retries) {
-      await reCreateChannel(name)
+      try {
+        await reCreateChannel(name)
+      } catch (e) {
+        console.error(instanceId(), 'ERROR reCreateChannel, retries: ', retries, e.message, 'sleeping 5 seconds')
+        await new Promise((resolve) => setTimeout(resolve, 5000))
+      }
       return tryChannel(name, retries)
     } else { throw e }
   }
