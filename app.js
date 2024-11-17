@@ -66,6 +66,7 @@ if (cluster.isMaster) {
     }
   })
 
+  // this is the most import, sends positions go rabbit and sqs
   app.post('/pushPositions', async (req, res) => {
     const message = JSON.stringify(req.body)
     try {
