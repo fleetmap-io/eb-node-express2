@@ -4,6 +4,8 @@ const healthCheck = require('./health-check-position.json')
 const { fetchInstanceId } = require('./metadata')
 const _instanceId = fetchInstanceId()
 let instanceId = 'unknown'
+_instanceId.then((i) => { instanceId = i })
+
 process.once('SIGINT', async () => {
   console.log('SIGINT', 'closing connection')
   try {
@@ -30,7 +32,7 @@ if (cluster.isMaster) {
   const cpuCount = require('os').cpus().length
   for (let i = 0; i < cpuCount; i += 1) { cluster.fork() }
 
-  cluster.on('exit', function (worker, code, signal) {
+  cluster.on('exit', async function (worker, code, signal) {
     console.error(`${instanceId} worker ${worker.id} exited with code ${code} and signal ${signal}`)
     cluster.fork()
   })
