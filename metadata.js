@@ -25,10 +25,7 @@ exports.fetchInstanceId = async () => {
       console.error(`Failed to fetch instance ID: ${response.statusText}`)
       return
     }
-
-    const instanceId = await response.text()
-    console.log(`Instance ID: ${instanceId}`)
-    return instanceId
+    return await response.text()
   } catch (err) {
     console.error('Error fetching instance ID:', err.message)
   }

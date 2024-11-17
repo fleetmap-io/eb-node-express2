@@ -3,8 +3,8 @@ const metadataUrl = 'http://169.254.169.254/latest/meta-data/instance-id'
 const rabbit = require('./rabbit')
 const healthCheck = require('./health-check-position.json')
 const { fetchInstanceId } = require('./metadata')
+const _instanceId = fetchInstanceId()
 let instanceId = 'unknown'
-fetchInstanceId().then((id) => (instanceId = id))
 process.once('SIGINT', async () => {
   console.log('SIGINT', 'closing connection')
   try {
@@ -104,7 +104,8 @@ if (cluster.isMaster) {
   })
 
   const port = process.env.PORT || 3000
-  app.listen(port, function () {
+  app.listen(port, async function () {
+    instanceId = await _instanceId
     console.log(`${instanceId} worker ${cluster.worker.id} running at http://127.0.0.1:${port}/`)
   })
 }
