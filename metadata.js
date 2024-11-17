@@ -1,6 +1,8 @@
 const metadataUrl = 'http://169.254.169.254/latest/meta-data/instance-id'
 const tokenUrl = 'http://169.254.169.254/latest/api/token'
+export let instanceId = 'unknown'
 
+exports.instanceId = instanceId
 exports.fetchInstanceId = async () => {
   try {
     // Step 1: Fetch token
@@ -25,7 +27,7 @@ exports.fetchInstanceId = async () => {
       console.error(`Failed to fetch instance ID: ${response.statusText}`)
       return
     }
-    return await response.text()
+    instanceId = await response.text()
   } catch (err) {
     console.error('Error fetching instance ID:', err.message)
   }

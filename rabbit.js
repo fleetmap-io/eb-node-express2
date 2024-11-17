@@ -2,6 +2,7 @@ const amqplib = require('amqplib')
 let _connection = null
 let _channel = getChannel('eb-node-express-2')
 createQueues().then()
+const m = require('metadata')
 
 function createQueues () {
   return _createQueues('E', 'positions', 'P', 'events', 'E')
@@ -52,7 +53,7 @@ async function tryChannel (name, retries = 2) {
   try {
     return await _channel
   } catch (e) {
-    console.error('ERROR tryChannel, retries: ', retries, e.message)
+    console.error(m.instanceId, 'ERROR tryChannel, retries: ', retries, e.message)
     if (--retries) {
       await reCreateChannel(name)
       return tryChannel(name, retries)
