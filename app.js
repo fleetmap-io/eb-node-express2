@@ -35,12 +35,13 @@ if (cluster.isMaster) {
   })
 } else {
   console.log(`${cluster.worker.id} fetching ${metadataUrl}`)
+
   fetch(metadataUrl)
     .then(r => r.text())
-    .then((i) => (instanceId = i))
     .catch((e) => {
       console.error(`Error fetching instance ID: ${e.message}`)
-    })
+    }).then((i) => (instanceId = i))
+
   const sqs = require('./sqs')
   const express = require('express')
   const bodyParser = require('body-parser')
