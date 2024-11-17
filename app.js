@@ -1,24 +1,54 @@
 const cluster = require('cluster')
+const metadataUrl = 'http://169.254.169.254/latest/meta-data/instance-id'
+let instanceId = 'unknown'
+fetch(metadataUrl).then(r => r.text()).then((i) => (instanceId = i))
+const rabbit = require('./rabbit')
+const healthCheck = JSON.stringify(require('./health-check-position.json'))
+process.once('SIGINT', async () => {
+  console.log('SIGINT', 'closing connection')
+  try {
+    if (cluster.isMaster) {
+      for (const id in cluster.workers) {
+        console.log(`sending shutdown to worker ${id}`)
+        cluster.workers[id].send('shutdown')
+      }
+    }
+
+    if (!cluster.isMaster) {
+      console.log(`${instanceId} worker ${cluster.worker.id} closing rabbit connection`)
+      await rabbit.close()
+      console.log(`${instanceId} worker ${cluster.worker.id} rabbit connection closed`)
+    }
+    process.exit(0)
+  } catch (err) {
+    console.error(`${instanceId} error during shutdown:`, err)
+    process.exit(1)
+  }
+})
 
 if (cluster.isMaster) {
   const cpuCount = require('os').cpus().length
   for (let i = 0; i < cpuCount; i += 1) { cluster.fork() }
 
-  cluster.on('exit', function (worker) {
-    console.error(`worker ${worker.id} died :(`)
+  cluster.on('exit', function (worker, code, signal) {
+    console.error(`${instanceId} worker ${worker.id} exited with code ${code} and signal ${signal}`)
     cluster.fork()
   })
 } else {
-  const rabbit = require('./rabbit')
   const sqs = require('./sqs')
   const express = require('express')
   const bodyParser = require('body-parser')
   const app = express()
   app.use(bodyParser.json())
 
+  // load balancer health check
   app.get('/', async (req, res) => {
-    // load balancer health check
-    res.send(`Worker ${cluster.worker.id} is up!`)
+    try {
+      await rabbit.send(healthCheck)
+      res.send(`${instanceId} worker ${cluster.worker.id} is up!`)
+    } catch (e) {
+      res.status(500).send(e.message)
+    }
   })
 
   app.post('/push', async (req, res) => {
@@ -27,7 +57,8 @@ if (cluster.isMaster) {
       await sqs.sendMessage(message, process.env.SQS_EVENTS_QUEUE)
       res.end()
     } catch (e) {
-      console.error(message, e.message)
+      console.error(message)
+      console.error(e.message)
       res.status(500).end()
     }
   })
@@ -43,7 +74,8 @@ if (cluster.isMaster) {
       await rabbit.send(JSON.stringify(req.body))
       res.end()
     } catch (e) {
-      console.error(message, e.message)
+      console.error(message)
+      console.error(e.message)
       try {
         await sqs.sendMessage(message, process.env.SQS_DLQ)
       } catch (e) {
@@ -60,13 +92,14 @@ if (cluster.isMaster) {
       await rabbit.send(message, 'E', 'E', 'eb-node-express-events')
       res.end()
     } catch (e) {
-      console.error(message, e.message)
+      console.error(message)
+      console.error(e.message)
       res.status(500).end()
     }
   })
 
   const port = process.env.PORT || 3000
   app.listen(port, function () {
-    console.log(`Worker ${cluster.worker.id} running at http://127.0.0.1:${port}/`)
+    console.log(`${instanceId} worker ${cluster.worker.id} running at http://127.0.0.1:${port}/`)
   })
 }

@@ -3,15 +3,6 @@ let _connection = null
 let _channel = getChannel('eb-node-express-2')
 createQueues().then()
 
-process.once('SIGINT', () => {
-  console.log('SIGINT', 'closing connection')
-  try {
-    _connection && _connection.close()
-  } catch (e) {
-    console.error('ERROR SIGINT', e.message)
-  }
-})
-
 function createQueues () {
   return _createQueues('E', 'positions', 'P', 'events', 'E')
 }
@@ -34,7 +25,8 @@ async function createQueue (queueName, exchange, routingKey) {
   await channel.assertQueue(queueName, { durable: true, deadLetterExchange: '', deadLetterRoutingKey: deadLetter })
   await channel.bindQueue(queueName, exchange, routingKey)
 }
-async function getChannel (name) {
+
+async function close () {
   if (_connection) {
     try {
       await _connection.close()
@@ -42,6 +34,12 @@ async function getChannel (name) {
       console.error('ERROR closing connection', e.message)
     }
   }
+}
+
+exports.close = close
+
+async function getChannel (name) {
+  await close()
   _connection = await amqplib.connect({
     hostname: 'b-2dbdb05f-b755-4c32-a121-447f818b4798.mq.us-east-1.amazonaws.com',
     port: 5671,
