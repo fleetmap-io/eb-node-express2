@@ -5,8 +5,6 @@ let _channel = getChannel('eb-node-express-2')
 createQueues()
   .catch(e => console.error('ERROR INIT createQueues', e.message))
 
-const { instanceId } = require('./metadata')
-
 function createQueues () {
   return _createQueues('E', 'positions', 'P', 'events', 'E')
 }
@@ -61,7 +59,7 @@ async function tryChannel (name, retries = 2) {
       try {
         await reCreateChannel(name)
       } catch (e) {
-        console.error(instanceId(), 'ERROR reCreateChannel, retries: ', retries, e.message, 'sleeping 5 seconds')
+        // console.error(instanceId(), 'ERROR reCreateChannel, retries: ', retries, e.message, 'sleeping 5 seconds')
         await new Promise((resolve) => setTimeout(resolve, 5000))
       }
       return tryChannel(name, retries)
