@@ -86,7 +86,7 @@ const send = async (message, exchange = 'E', routingKey = 'P', name = 'eb-node-e
     await channel.waitForConfirms()
   } catch (e) {
     console.log(message)
-    console.error(retries, e.message)
+    console.error('ERROR send, retries: ', retries, e.message)
     if (--retries) {
       await reCreateChannel(name)
       return send(message, exchange, routingKey, name, retries)
