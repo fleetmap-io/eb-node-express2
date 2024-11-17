@@ -34,6 +34,7 @@ if (cluster.isMaster) {
     cluster.fork()
   })
 } else {
+  console.log(`${cluster.worker.id} fetching ${metadataUrl}`)
   fetch(metadataUrl)
     .then(r => r.text())
     .then((i) => (instanceId = i))
