@@ -1,6 +1,6 @@
 const metadataUrl = 'http://169.254.169.254/latest/meta-data/instance-id'
 const tokenUrl = 'http://169.254.169.254/latest/api/token'
-export let instanceId = 'unknown'
+let instanceId = 'unknown'
 
 exports.instanceId = instanceId
 exports.fetchInstanceId = async () => {
