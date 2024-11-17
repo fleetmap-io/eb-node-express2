@@ -1,8 +1,8 @@
 const cluster = require('cluster')
 const rabbit = require('./rabbit')
 const healthCheck = require('./health-check-position.json')
-const m = require('./metadata')
-const _instanceId = m.fetchInstanceId()
+const { fetchInstanceId, instanceId } = require('./metadata')
+const _instanceId = fetchInstanceId()
 
 process.once('SIGINT', async () => {
   console.log('SIGINT', 'closing connection')
@@ -15,13 +15,13 @@ process.once('SIGINT', async () => {
     }
 
     if (!cluster.isMaster) {
-      console.log(`${m.instanceId} worker ${cluster.worker.id} closing rabbit connection`)
+      console.log(`${instanceId()} worker ${cluster.worker.id} closing rabbit connection`)
       await rabbit.close()
-      console.log(`${m.instanceId} worker ${cluster.worker.id} rabbit connection closed`)
+      console.log(`${instanceId()} worker ${cluster.worker.id} rabbit connection closed`)
     }
     process.exit(0)
   } catch (err) {
-    console.error(`${m.instanceId} error during shutdown:`, err)
+    console.error(`${instanceId()} error during shutdown:`, err)
     process.exit(1)
   }
 })
@@ -31,7 +31,7 @@ if (cluster.isMaster) {
   for (let i = 0; i < cpuCount; i += 1) { cluster.fork() }
 
   cluster.on('exit', async function (worker, code, signal) {
-    console.error(`${m.instanceId} worker ${worker.id} exited with code ${code} and signal ${signal}`)
+    console.error(`${instanceId()} worker ${worker.id} exited with code ${code} and signal ${signal}`)
     cluster.fork()
   })
 } else {
@@ -44,11 +44,11 @@ if (cluster.isMaster) {
   // load balancer health check
   app.get('/', async (req, res) => {
     try {
-      healthCheck.position.attributes.instanceId = m.instanceId
+      healthCheck.position.attributes.instanceId = instanceId()
       healthCheck.position.id = cluster.worker.id
       healthCheck.position.serverTime = new Date().toISOString()
       await rabbit.send(JSON.stringify(healthCheck))
-      res.send(`${m.instanceId} worker ${cluster.worker.id} is up!`)
+      res.send(`${instanceId()} worker ${cluster.worker.id} is up!`)
     } catch (e) {
       res.status(500).send(e.message)
     }
@@ -104,6 +104,6 @@ if (cluster.isMaster) {
   const port = process.env.PORT || 3000
   app.listen(port, async function () {
     await _instanceId
-    console.log(`${m.instanceId} worker ${cluster.worker.id} running at http://127.0.0.1:${port}/`)
+    console.log(`${instanceId()} worker ${cluster.worker.id} running at http://127.0.0.1:${port}/`)
   })
 }

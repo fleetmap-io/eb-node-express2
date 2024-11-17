@@ -2,7 +2,7 @@ const metadataUrl = 'http://169.254.169.254/latest/meta-data/instance-id'
 const tokenUrl = 'http://169.254.169.254/latest/api/token'
 let instanceId = 'unknown'
 
-exports.instanceId = instanceId
+exports.instanceId = () => instanceId
 exports.fetchInstanceId = async () => {
   try {
     // Step 1: Fetch token
