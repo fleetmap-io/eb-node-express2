@@ -60,8 +60,8 @@ if (cluster.isMaster) {
       await sqs.sendMessage(message, process.env.SQS_EVENTS_QUEUE)
       res.end()
     } catch (e) {
-      console.error(instanceId(), message)
-      console.error(e.message)
+      console.error(message)
+      console.error(instanceId(), '/push', e.message)
       res.status(500).end()
     }
   })
@@ -78,7 +78,7 @@ if (cluster.isMaster) {
       res.end()
     } catch (e) {
       console.error(message)
-      console.error(e.message)
+      console.error(instanceId(), '/pushPositions', message)
       try {
         await sqs.sendMessage(message, process.env.SQS_DLQ)
       } catch (e) {
@@ -96,7 +96,7 @@ if (cluster.isMaster) {
       res.end()
     } catch (e) {
       console.error(message)
-      console.error(e.message)
+      console.error(instanceId(), '/pushRabbit', message)
       try {
         await sqs.sendMessage(message, process.env.SQS_DLQ)
       } catch (e) {
