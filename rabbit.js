@@ -65,4 +65,5 @@ const send = async (message, exchange = 'E', routingKey = 'P', name = 'eb-node-e
     }
   }
 }
+
 exports.send = send
