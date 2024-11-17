@@ -34,7 +34,12 @@ if (cluster.isMaster) {
     cluster.fork()
   })
 } else {
-  fetch(metadataUrl).then(r => r.text()).then((i) => (instanceId = i))
+  fetch(metadataUrl)
+    .then(r => r.text())
+    .then((i) => (instanceId = i))
+    .catch((e) => {
+      console.error(`Error fetching instance ID: ${e.message}`)
+    })
   const sqs = require('./sqs')
   const express = require('express')
   const bodyParser = require('body-parser')
