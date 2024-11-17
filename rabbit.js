@@ -56,7 +56,7 @@ async function tryChannel (name, retries = 2) {
   try {
     return await _channel
   } catch (e) {
-    console.error(instanceId(), 'ERROR tryChannel, retries: ', retries, e.message)
+    // console.error(instanceId(), 'ERROR tryChannel, retries: ', retries, e.message)
     if (--retries) {
       try {
         await reCreateChannel(name)
@@ -73,7 +73,7 @@ async function reCreateChannel (name) {
   try {
     (await _channel).close()
   } catch (e) {
-    console.error('ERROR closing channel', e.message)
+    // console.error('ERROR closing channel', e.message)
   }
   _channel = getChannel(name)
   await createQueues()
