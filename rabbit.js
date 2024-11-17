@@ -2,7 +2,7 @@ const amqplib = require('amqplib')
 let _connection = null
 let _channel = getChannel('eb-node-express-2')
 createQueues().then()
-const m = require('metadata')
+const m = require('./metadata')
 
 function createQueues () {
   return _createQueues('E', 'positions', 'P', 'events', 'E')
