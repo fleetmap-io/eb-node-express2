@@ -1,9 +1,8 @@
 const cluster = require('cluster')
 const metadataUrl = 'http://169.254.169.254/latest/meta-data/instance-id'
-let instanceId = 'unknown'
-fetch(metadataUrl).then(r => r.text()).then((i) => (instanceId = i))
 const rabbit = require('./rabbit')
-const healthCheck = JSON.stringify(require('./health-check-position.json'))
+const healthCheck = require('./health-check-position.json')
+let instanceId = 'unknown'
 process.once('SIGINT', async () => {
   console.log('SIGINT', 'closing connection')
   try {
@@ -35,6 +34,7 @@ if (cluster.isMaster) {
     cluster.fork()
   })
 } else {
+  fetch(metadataUrl).then(r => r.text()).then((i) => (instanceId = i))
   const sqs = require('./sqs')
   const express = require('express')
   const bodyParser = require('body-parser')
@@ -44,7 +44,10 @@ if (cluster.isMaster) {
   // load balancer health check
   app.get('/', async (req, res) => {
     try {
-      await rabbit.send(healthCheck)
+      healthCheck.position.attributes.instanceId = instanceId
+      healthCheck.position.id = cluster.worker.id
+      healthCheck.position.serverTime = new Date().toUTCString()
+      await rabbit.send(JSON.stringify(healthCheck))
       res.send(`${instanceId} worker ${cluster.worker.id} is up!`)
     } catch (e) {
       res.status(500).send(e.message)
