@@ -1,5 +1,4 @@
 const cluster = require('cluster')
-const metadataUrl = 'http://169.254.169.254/latest/meta-data/instance-id'
 const rabbit = require('./rabbit')
 const healthCheck = require('./health-check-position.json')
 const { fetchInstanceId } = require('./metadata')
@@ -36,7 +35,6 @@ if (cluster.isMaster) {
     cluster.fork()
   })
 } else {
-  console.log(`${cluster.worker.id} fetching ${metadataUrl}`)
   const sqs = require('./sqs')
   const express = require('express')
   const bodyParser = require('body-parser')
