@@ -60,7 +60,7 @@ if (cluster.isMaster) {
       await sqs.sendMessage(message, process.env.SQS_EVENTS_QUEUE)
       res.end()
     } catch (e) {
-      console.error(message)
+      console.error(instanceId(), message)
       console.error(e.message)
       res.status(500).end()
     }
@@ -97,6 +97,11 @@ if (cluster.isMaster) {
     } catch (e) {
       console.error(message)
       console.error(e.message)
+      try {
+        await sqs.sendMessage(message, process.env.SQS_DLQ)
+      } catch (e) {
+        console.error(e.message)
+      }
       res.status(500).end()
     }
   })
