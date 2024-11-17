@@ -1,14 +1,30 @@
 const amqplib = require('amqplib')
 let _connection = null
 let _channel = getChannel('eb-node-express-2')
-createQueues('E', 'positions', 'P', 'events', 'E')
-  .then().catch(e => console.error('ERROR', e))
+createQueues().then()
 
-async function createQueues (exchange, positionsQueue, positionsKey, eventsQueue, eventsKey) {
-  const channel = await _channel
-  channel.assertExchange(exchange, 'direct', { durable: true, autoDelete: false })
-  await createQueue(positionsQueue, exchange, positionsKey)
-  await createQueue(eventsQueue, exchange, eventsKey)
+process.once('SIGINT', () => {
+  console.log('SIGINT', 'closing connection')
+  try {
+    _connection && _connection.close()
+  } catch (e) {
+    console.error('ERROR SIGINT', e.message)
+  }
+})
+
+function createQueues () {
+  return _createQueues('E', 'positions', 'P', 'events', 'E')
+}
+
+async function _createQueues (exchange, positionsQueue, positionsKey, eventsQueue, eventsKey) {
+  try {
+    const channel = await _channel
+    channel.assertExchange(exchange, 'direct', { durable: true, autoDelete: false })
+    await createQueue(positionsQueue, exchange, positionsKey)
+    await createQueue(eventsQueue, exchange, eventsKey)
+  } catch (e) {
+    console.error('ERROR', 'createQueues', e.message)
+  }
 }
 
 async function createQueue (queueName, exchange, routingKey) {
@@ -23,7 +39,7 @@ async function getChannel (name) {
     try {
       await _connection.close()
     } catch (e) {
-      console.error('ERROR', e)
+      console.error('ERROR closing connection', e.message)
     }
   }
   _connection = await amqplib.connect({
@@ -42,13 +58,24 @@ async function tryChannel (name, retries = 2) {
   try {
     return await _channel
   } catch (e) {
-    console.error(retries, e.message)
+    console.error('ERROR tryChannel, retries: ', retries, e.message)
     if (--retries) {
-      _channel = getChannel(name)
+      await reCreateChannel(name)
       return tryChannel(name, retries)
     } else { throw e }
   }
 }
+
+async function reCreateChannel (name) {
+  try {
+    (await _channel).close()
+  } catch (e) {
+    console.error('ERROR closing channel', e.message)
+  }
+  _channel = getChannel(name)
+  await createQueues()
+}
+
 const send = async (message, exchange = 'E', routingKey = 'P', name = 'eb-node-express-positions', retries = 3) => {
   try {
     const channel = await tryChannel(name)
@@ -58,7 +85,7 @@ const send = async (message, exchange = 'E', routingKey = 'P', name = 'eb-node-e
     console.log(message)
     console.error(retries, e.message)
     if (--retries) {
-      _channel = getChannel(name)
+      await reCreateChannel(name)
       return send(message, exchange, routingKey, name, retries)
     } else {
       throw e
