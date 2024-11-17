@@ -2,7 +2,9 @@ const cluster = require('cluster')
 const metadataUrl = 'http://169.254.169.254/latest/meta-data/instance-id'
 const rabbit = require('./rabbit')
 const healthCheck = require('./health-check-position.json')
+const { fetchInstanceId } = require('./metadata')
 let instanceId = 'unknown'
+fetchInstanceId().then((id) => (instanceId = id))
 process.once('SIGINT', async () => {
   console.log('SIGINT', 'closing connection')
   try {
@@ -35,13 +37,6 @@ if (cluster.isMaster) {
   })
 } else {
   console.log(`${cluster.worker.id} fetching ${metadataUrl}`)
-
-  fetch(metadataUrl)
-    .then(r => r.text())
-    .catch((e) => {
-      console.error(`Error fetching instance ID: ${e.message}`)
-    }).then((i) => (instanceId = i))
-
   const sqs = require('./sqs')
   const express = require('express')
   const bodyParser = require('body-parser')
