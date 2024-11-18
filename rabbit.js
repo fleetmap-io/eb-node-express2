@@ -77,7 +77,7 @@ async function reCreateChannel (name) {
   await createQueues()
 }
 
-const send = async (message, exchange = 'E', routingKey = 'P', name = 'eb-node-express-positions', retries = 3) => {
+const send = async (message, exchange = 'E', routingKey = 'P', name = 'eb-node-express-positions', retries = 2) => {
   try {
     const channel = await tryChannel(name)
     channel.publish(exchange, routingKey, Buffer.from(message), { persistent: true })

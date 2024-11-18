@@ -82,10 +82,11 @@ if (cluster.isMaster) {
       console.error(instanceId(), '/pushPositions', message)
       try {
         await sqs.sendMessage(message, process.env.SQS_DLQ)
+        res.end()
       } catch (e) {
-        console.error(e.message)
+        console.error('ERROR sqs', e.message)
+        res.status(500).end()
       }
-      res.status(500).end()
     }
   })
 
