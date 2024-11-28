@@ -44,10 +44,6 @@ if (cluster.isMaster) {
   // load balancer health check
   app.get('/', async (req, res) => {
     try {
-      healthCheck.position.attributes.instanceId = instanceId()
-      healthCheck.position.id = cluster.worker.id
-      healthCheck.position.serverTime = new Date().toISOString()
-      await rabbit.send(JSON.stringify(healthCheck))
       res.send(`${instanceId()} worker ${cluster.worker.id} is up!`)
     } catch (e) {
       res.status(500).send(e.message)
