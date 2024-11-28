@@ -1,6 +1,5 @@
 const cluster = require('cluster')
 const rabbit = require('./rabbit')
-const healthCheck = require('./health-check-position.json')
 const { fetchInstanceId, instanceId } = require('./metadata')
 const _instanceId = fetchInstanceId()
 
