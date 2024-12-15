@@ -66,7 +66,7 @@ if (cluster.isMaster) {
     const message = JSON.stringify(req.body)
     try {
       const { device, position } = req.body
-      if (device && device.attributes.integration) {
+      if (device && (device.attributes.integration || device.attributes.can === 3)) {
         await sqs.sendMessage(message, process.env.SQS_POSITIONS_QUEUE)
       }
       position.attributes.source ||= 'eu-west-3'
