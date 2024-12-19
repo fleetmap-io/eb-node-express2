@@ -38,7 +38,7 @@ exports.processTacho = async ({ device, position }) => {
     const data = {
       device,
       apdu: position.attributes.option3,
-      apduSequenceNumber: parseInt(position.attributes.option2)
+      apduSequenceNumber: position.attributes.option2
     }
     if (position.attributes.messageType === 2) {
       const id = new Date().getTime().toString().slice(-4)
