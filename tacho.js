@@ -1,4 +1,8 @@
 const { post } = require('axios')
+
+const errorCodes = {
+  '6E': 'Authentication error. Check if company card is not expired. If not, report to the device producer.'
+}
 exports.processTacho = async ({ device, position }) => {
   try {
     if (position.attributes.type !== 'TTR') {
@@ -32,7 +36,8 @@ exports.processTacho = async ({ device, position }) => {
           1: 'Authorization fail.',
           2: 'Authorization timeout.',
           3: '3: Authorization data error.'
-        }[position.attributes.option1]
+        }[position.attributes.option1],
+        errorCodes[position.attributes.option4] || position.attributes.option4
       )
     } else if (position.attributes.messageType === 0) {
       console.log('Reply for DDD file request',
