@@ -27,12 +27,12 @@ exports.processTacho = async ({ device, position }) => {
     }
 
     console.log(device.name, 'type',
-      position.attributes.type, 'requestId',
-      position.attributes.requestId, 'messageType',
-      position.attributes.messageType, 'option1',
-      position.attributes.option1, 'option2',
-      position.attributes.option2, 'option3',
-      position.attributes.option3, 'option4',
+      position.attributes.type, 'reqId',
+      position.attributes.requestId, 'msgType',
+      position.attributes.messageType, 'opt1',
+      position.attributes.option1, 'opt2',
+      position.attributes.option2, 'opt3',
+      position.attributes.option3, 'opt4',
       position.attributes.option4)
 
     if (position.attributes.messageType === 2) {
