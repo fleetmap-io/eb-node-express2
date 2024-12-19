@@ -1,7 +1,8 @@
 const { post } = require('axios')
 
 const errorCodes = {
-  '6E': 'Authentication error. Check if company card is not expired. If not, report to the device producer.'
+  '6C': 'APDU error. Report to the device producer',
+  '6E': 'Authentication error. Check if company card is not expired. If not, report to the device producer'
 }
 
 function getDeviceStatus (_status) {
