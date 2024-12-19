@@ -3,6 +3,21 @@ const { post } = require('axios')
 const errorCodes = {
   '6E': 'Authentication error. Check if company card is not expired. If not, report to the device producer.'
 }
+
+function getDeviceStatus (_status) {
+  const status = parseInt(_status, 16)
+  if (isBitOn(status, 0)) return 'Authentication in progress'
+  if (isBitOn(status, 1)) return 'Authentication OK'
+  if (isBitOn(status, 2)) return 'Authentication ERROR'
+  if (isBitOn(status, 3)) return 'CAN_Logistic is downloading files from tachograph'
+  if (isBitOn(status, 4)) return 'Data is ready to read from CAN_Logistic by master device.'
+  return ''
+}
+
+function isBitOn (number, index) {
+  return Boolean(number & (1 << index))
+}
+
 exports.processTacho = async ({ device, position }) => {
   try {
     if (position.attributes.type !== 'TTR') {
@@ -36,7 +51,7 @@ exports.processTacho = async ({ device, position }) => {
           1: 'Authorization fail.',
           2: 'Authorization timeout.',
           3: '3: Authorization data error.'
-        }[position.attributes.option1],
+        }[position.attributes.option1], getDeviceStatus(position.attributes.option2),
         errorCodes[position.attributes.option4] || position.attributes.option4
       )
     } else if (position.attributes.messageType === 0) {
@@ -47,7 +62,7 @@ exports.processTacho = async ({ device, position }) => {
           2: 'Request busy: CAN_Logistic is executing precious order',
           3: 'Request busy: Configuration of the cancel order.',
           4: 'Request busy: The order is forbidden as the device is downloading'
-        }[position.attributes.option1]
+        }[position.attributes.option1], getDeviceStatus(position.attributes.option2)
       )
     }
   } catch (e) {
