@@ -1,6 +1,7 @@
 const cluster = require('cluster')
 const rabbit = require('./rabbit')
 const { fetchInstanceId, instanceId } = require('./metadata')
+const { processTacho } = require('./tacho')
 const _instanceId = fetchInstanceId()
 
 process.once('SIGINT', async () => {
@@ -66,7 +67,10 @@ if (cluster.isMaster) {
     const message = JSON.stringify(req.body)
     try {
       const { device, position } = req.body
-      if (device && (device.attributes.integration || device.attributes.can === 3)) {
+      if (device && device.attributes.can === 3) {
+        await processTacho({ device, position })
+      }
+      if (device && device.attributes.integration) {
         await sqs.sendMessage(message, process.env.SQS_POSITIONS_QUEUE)
       }
       position.attributes.source ||= 'eu-west-3'
