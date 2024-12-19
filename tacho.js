@@ -32,7 +32,7 @@ exports.processTacho = async ({ device, position }) => {
       position.attributes.messageType, 'opt1',
       position.attributes.option1 || '', 'opt2',
       position.attributes.option2, 'opt3',
-      position.attributes.option3, 'opt4',
+      position.attributes.option3 || '', 'opt4',
       position.attributes.option4)
 
     if (position.attributes.messageType === 2) {
