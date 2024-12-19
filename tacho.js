@@ -35,9 +35,13 @@ exports.processTacho = async ({ device, position }) => {
       position.attributes.option3 || '', 'opt4',
       position.attributes.option4)
 
+    const data = {
+      device,
+      apdu: position.attributes.option3,
+      apduSequenceNumber: parseInt(position.attributes.option2)
+    }
     if (position.attributes.messageType === 2) {
       const id = new Date().getTime().toString().slice(-4)
-      const data = { device, apdu: position.attributes.option3 }
       const apdu = await post('http://tacho.fleetmap.pt:8080', data).then(r => r.data)
       const message = `AT+GTTTR=gv355ceu,1,${position.attributes.option2},${apdu},,,,,,,${id}$`
       console.log('->', message)
@@ -55,6 +59,7 @@ exports.processTacho = async ({ device, position }) => {
         }[position.attributes.option1], getDeviceStatus(position.attributes.option2),
         errorCodes[position.attributes.option4] || position.attributes.option4
       )
+      await post('http://tacho.fleetmap.pt:8080/release', data)
     } else if (position.attributes.messageType === 0) {
       console.log('Reply for DDD file request',
         {
