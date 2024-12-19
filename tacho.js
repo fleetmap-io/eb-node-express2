@@ -25,6 +25,15 @@ exports.processTacho = async ({ device, position }) => {
         { deviceId: device.id, type: 'custom', attributes: { data: message }, description: 'eb-node' },
         { auth: { username: process.env.TRACCAR_ADMIN_USER, password: process.env.TRACCAR_ADMIN_PASS } }
       )
+    } else if (position.attributes.messageType === 1) {
+      console.log('Reply for DDD file request',
+        {
+          0: 'Authorization OK.',
+          1: 'Authorization fail.',
+          2: 'Authorization timeout.',
+          3: '3: Authorization data error.'
+        }[position.attributes.option1]
+      )
     } else if (position.attributes.messageType === 0) {
       console.log('Reply for DDD file request',
         {
