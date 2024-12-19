@@ -40,7 +40,7 @@ exports.processTacho = async ({ device, position }) => {
       const data = { device, apdu: position.attributes.option3 }
       const apdu = await post('http://tacho.fleetmap.pt:8080', data).then(r => r.data)
       const message = `AT+GTTTR=gv355ceu,1,${position.attributes.option2},${apdu},,,,,,,${id}$`
-      console.log('tacho sending', message)
+      console.log('->', message)
       await post('http://gps.fleetmap.pt/api/commands/send',
         { deviceId: device.id, type: 'custom', attributes: { data: message }, description: 'eb-node' },
         { auth: { username: process.env.TRACCAR_ADMIN_USER, password: process.env.TRACCAR_ADMIN_PASS } }
