@@ -40,7 +40,19 @@ exports.processTacho = async ({ device, position }) => {
       apdu: position.attributes.option3,
       apduSequenceNumber: position.attributes.option2
     }
-    if (position.attributes.messageType === 2) {
+    if (position.attributes.messageType === 3) {
+      console.log('File reading',
+        {
+          0: 'CAN_Logistic getting file from Tachograph OK',
+          1: 'CAN_Logistic getting file from Tachograph fail',
+          2: 'File mismatch',
+          3: 'CAN_Logistic getting file from Tachograph timeout',
+          4: 'Device getting file from CAN_Logistic timeout',
+          5: 'Device getting file from CAN_Logistic fail.',
+          6: 'DDD file size error.'
+        }[position.attributes.option1], getDeviceStatus(position.attributes.option2),
+        errorCodes[position.attributes.option4] || position.attributes.option4 || '')
+    } else if (position.attributes.messageType === 2) {
       const id = new Date().getTime().toString().slice(-4)
       const apdu = await post('http://tacho.fleetmap.pt:8080', data).then(r => r.data)
       const message = `AT+GTTTR=gv355ceu,1,${position.attributes.option2},${apdu},,,,,,,${id}$`
@@ -72,6 +84,6 @@ exports.processTacho = async ({ device, position }) => {
       )
     }
   } catch (e) {
-    console.error('tacho', e)
+    console.error((e.response && e.response.data) || e)
   }
 }
