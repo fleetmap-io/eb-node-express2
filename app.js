@@ -70,7 +70,7 @@ if (cluster.isMaster) {
       if (device && device.attributes.can === 3) {
         await processTacho({ device, position })
       }
-      if (device && device.attributes.integration) {
+      if (device && (device.attributes.integration || device.attributes.can === 3)) {
         await sqs.sendMessage(message, process.env.SQS_POSITIONS_QUEUE)
       }
       position.attributes.source ||= 'eu-west-3'
