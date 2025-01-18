@@ -76,7 +76,7 @@ if (cluster.isMaster) {
         rabbitHeaders = { CC: ['PI'] }
       }
       position.attributes.source ||= 'eu-west-3'
-      await rabbit.send(JSON.stringify(req.body), 'E', 'P', 'eb-node-express-positions', 2, rabbitHeaders)
+      await rabbit.send(JSON.stringify(req.body), 'E', 'P', 'eb-node-express-positions', rabbitHeaders)
       res.end()
     } catch (e) {
       console.error(message)

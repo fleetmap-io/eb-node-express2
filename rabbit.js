@@ -77,7 +77,7 @@ async function reCreateChannel (name) {
   await createQueues()
 }
 
-const send = async (message, exchange = 'E', routingKey = 'P', name = 'eb-node-express-positions', retries = 2, headers = null) => {
+const send = async (message, exchange = 'E', routingKey = 'P', name = 'eb-node-express-positions', headers = null, retries = 2) => {
   try {
     const channel = await tryChannel(name)
     channel.publish(exchange, routingKey, Buffer.from(message), { persistent: true, headers })
@@ -87,7 +87,7 @@ const send = async (message, exchange = 'E', routingKey = 'P', name = 'eb-node-e
     // console.error('ERROR send, retries: ', retries, e.message)
     if (--retries) {
       await reCreateChannel(name)
-      return send(message, exchange, routingKey, name, retries)
+      return send(message, exchange, routingKey, name, headers, retries)
     } else {
       throw e
     }
