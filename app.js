@@ -70,11 +70,13 @@ if (cluster.isMaster) {
       if (device && device.attributes.can === 3) {
         await processTacho({ device, position })
       }
+      let rabbitHeaders = null
       if (device && (device.attributes.integration || device.attributes.can === 3)) {
         await sqs.sendMessage(message, process.env.SQS_POSITIONS_QUEUE)
+        rabbitHeaders = { CC: ['PI'] }
       }
       position.attributes.source ||= 'eu-west-3'
-      await rabbit.send(JSON.stringify(req.body))
+      await rabbit.send(JSON.stringify(req.body), 'E', 'P', 'eb-node-express-positions', 2, rabbitHeaders)
       res.end()
     } catch (e) {
       console.error(message)
