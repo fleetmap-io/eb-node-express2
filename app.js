@@ -2,6 +2,7 @@ const cluster = require('cluster')
 const rabbit = require('./rabbit')
 const { fetchInstanceId, instanceId } = require('./metadata')
 const { processTacho } = require('./tacho')
+const sqs = require('./sqs')
 const _instanceId = fetchInstanceId()
 
 process.once('SIGINT', async () => {
@@ -65,14 +66,13 @@ if (cluster.isMaster) {
   // this is the most import, sends positions go rabbit and sqs
   app.post('/pushPositions', async (req, res) => {
     const message = JSON.stringify(req.body)
+    let rabbitHeaders = null
     try {
       const { device, position } = req.body
       if (device && device.attributes.can === 3) {
         await processTacho({ device, position })
       }
-      let rabbitHeaders = null
       if (device && (device.attributes.integration || device.attributes.can === 3)) {
-        await sqs.sendMessage(message, process.env.SQS_POSITIONS_QUEUE)
         rabbitHeaders = { CC: ['PI'] }
       }
       position.attributes.source ||= 'eu-west-3'
@@ -83,6 +83,9 @@ if (cluster.isMaster) {
       console.error(instanceId(), '/pushPositions', message)
       try {
         await sqs.sendMessage(message, process.env.SQS_DLQ)
+        if (rabbitHeaders) {
+          await sqs.sendMessage(message, process.env.SQS_POSITIONS_QUEUE)
+        }
         res.end()
       } catch (e) {
         console.error('ERROR sqs', e.message)
