@@ -53,7 +53,7 @@ if (cluster.isMaster) {
   // events
   app.post('/push', async (req, res) => {
     const event = req.body
-    const message = JSON.stringify(event)
+    let message
     try {
       switch (event.event && event.event.type) {
         case 'deviceOnline':
@@ -63,6 +63,7 @@ if (cluster.isMaster) {
         case 'deviceUnknown':
           break
         default:
+          message = JSON.stringify(event)
           await sqs.sendMessage(message, process.env.SQS_EVENTS_QUEUE)
       }
       res.end()
