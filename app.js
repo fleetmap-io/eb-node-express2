@@ -50,10 +50,21 @@ if (cluster.isMaster) {
     }
   })
 
+  // events
   app.post('/push', async (req, res) => {
-    const message = JSON.stringify(req.body)
+    const event = req.body
+    const message = JSON.stringify(event)
     try {
-      await sqs.sendMessage(message, process.env.SQS_EVENTS_QUEUE)
+      switch (event.event && event.event.type) {
+        case 'deviceOnline':
+        case 'deviceOffline':
+        case 'deviceMoving':
+        case 'deviceStopped':
+        case 'deviceUnknown':
+          break
+        default:
+          await sqs.sendMessage(message, process.env.SQS_EVENTS_QUEUE)
+      }
       res.end()
     } catch (e) {
       console.error(message)
