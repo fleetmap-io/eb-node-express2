@@ -54,7 +54,7 @@ exports.processTacho = async ({ device, position }) => {
         errorCodes[position.attributes.option4] || position.attributes.option4 || '')
     } else if (position.attributes.messageType === 2) {
       const id = new Date().getTime().toString().slice(-4)
-      const apdu = await post('http://tacho.fleetmap.pt:8080', data).then(r => r.data)
+      const apdu = await post('http://tacho.fleetmap.pt:8080', data, { timeout: 5000 }).then(r => r.data)
       const message = `AT+GTTTR=gv355ceu,1,${position.attributes.option2},${apdu},,,,,,,${id}$`
       console.log('->', message)
       await post('http://gps.fleetmap.pt/api/commands/send',
@@ -71,7 +71,7 @@ exports.processTacho = async ({ device, position }) => {
         }[position.attributes.option1], getDeviceStatus(position.attributes.option2),
         errorCodes[position.attributes.option4] || position.attributes.option4
       )
-      await post('http://tacho.fleetmap.pt:8080/release', data)
+      await post('http://tacho.fleetmap.pt:8080/release', data, { timeout: 5000 })
     } else if (position.attributes.messageType === 0) {
       console.log('Reply for DDD file request',
         {
@@ -84,6 +84,6 @@ exports.processTacho = async ({ device, position }) => {
       )
     }
   } catch (e) {
-    console.error((e.response && e.response.data) || e.statusCode || e)
+    console.error((e.response && e.response.data) || e.statusCode || e.message)
   }
 }
