@@ -26,7 +26,7 @@ exports.processTacho = async ({ device, position }) => {
       return
     }
 
-    console.log(device.name, 'type',
+    console.log('tacho', device.name, 'type',
       position.attributes.type, 'reqId',
       position.attributes.requestId, 'msgType',
       position.attributes.messageType, 'opt1',
@@ -56,13 +56,13 @@ exports.processTacho = async ({ device, position }) => {
       const id = new Date().getTime().toString().slice(-4)
       const apdu = await post('http://tacho.fleetmap.pt:8080', data, { timeout: 5000 }).then(r => r.data)
       const message = `AT+GTTTR=gv355ceu,1,${position.attributes.option2},${apdu},,,,,,,${id}$`
-      console.log('->', message)
+      console.log('tacho', device.name, '->', message)
       await post('http://gps.fleetmap.pt/api/commands/send',
         { deviceId: device.id, type: 'custom', attributes: { data: message }, description: 'eb-node' },
         { auth: { username: process.env.TRACCAR_ADMIN_USER, password: process.env.TRACCAR_ADMIN_PASS } }
       )
     } else if (position.attributes.messageType === 1) {
-      console.log('Reply for DDD file request',
+      console.log('tacho', device.name, 'Reply for DDD file request',
         {
           0: 'Authorization OK.',
           1: 'Authorization fail.',
@@ -73,7 +73,7 @@ exports.processTacho = async ({ device, position }) => {
       )
       await post('http://tacho.fleetmap.pt:8080/release', data, { timeout: 5000 })
     } else if (position.attributes.messageType === 0) {
-      console.log('Reply for DDD file request',
+      console.log('tacho', device.name, 'Reply for DDD file request',
         {
           0: 'Request OK',
           1: 'Request busy: Advanced test',
@@ -84,6 +84,6 @@ exports.processTacho = async ({ device, position }) => {
       )
     }
   } catch (e) {
-    console.error((e.response && e.response.data) || e.statusCode || e.message)
+    console.error('tacho', device.name, (e.response && e.response.data) || e.statusCode || e.message)
   }
 }
