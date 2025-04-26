@@ -83,6 +83,6 @@ exports.processTacho = async ({ device, position }) => {
       )
     }
   } catch (e) {
-    console.error('tacho', device.name, (e.response && e.response.data) || e.statusCode || e.message)
+    console.error('tacho', device.name, e.message, e.configuration, (e.response && e.response.data))
   }
 }
