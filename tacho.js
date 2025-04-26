@@ -26,8 +26,7 @@ exports.processTacho = async ({ device, position }) => {
       return
     }
 
-    console.log('tacho', device.name, 'type',
-      position.attributes.type, 'reqId',
+    console.log('tacho', device.name, 'reqId',
       position.attributes.requestId, 'msgType',
       position.attributes.messageType, 'opt1',
       position.attributes.option1 || '', 'opt2',
