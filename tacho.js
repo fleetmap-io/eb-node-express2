@@ -38,7 +38,7 @@ exports.processTacho = async ({ device, position }) => {
       apduSequenceNumber: position.attributes.option2
     }
     if (position.attributes.messageType === 3) {
-      console.log('File reading',
+      console.log('tacho', device.name, 'File reading',
         {
           0: 'CAN_Logistic getting file from Tachograph OK',
           1: 'CAN_Logistic getting file from Tachograph fail',
