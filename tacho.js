@@ -70,7 +70,8 @@ exports.processTacho = async ({ device, position }) => {
         }[position.attributes.option1], getDeviceStatus(position.attributes.option2),
         errorCodes[position.attributes.option4] || position.attributes.option4
       )
-      await post('http://tacho.fleetmap.pt:8080/release', data, { timeout: 5000 })
+      const url = 'http://tacho.fleetmap.pt:8080/release'
+      try { await post(url, data, { timeout: 5000 }) } catch (e) { console.error('tacho', device.name, url, data, e) }
     } else if (position.attributes.messageType === 0) {
       console.log('tacho', device.name, 'Reply for DDD file request',
         {
@@ -83,6 +84,6 @@ exports.processTacho = async ({ device, position }) => {
       )
     }
   } catch (e) {
-    console.error('tacho', device.name, e.message, e.configuration || e, (e.response && e.response.data))
+    console.error('tacho', device.name, e.message, e.configuration, (e.response && e.response.data))
   }
 }
