@@ -21,18 +21,16 @@ function isBitOn (number, index) {
 
 exports.processTacho = async ({ device, position }) => {
   try {
-    if (position.attributes.type !== 'TTR') {
-      // console.log('ignoring', position.attributes.type)
-      return
-    }
+    if (position.attributes.type !== 'TTR') { return }
 
-    console.log('tacho', device.name, 'reqId',
-      position.attributes.requestId, 'msgType',
-      position.attributes.messageType, 'opt1',
-      position.attributes.option1 || '', 'opt2',
-      position.attributes.option2, 'opt3',
-      position.attributes.option3 || '', 'opt4',
-      position.attributes.option4)
+    console.log(device.name,
+      'request:', position.attributes.requestId,
+      'type:', position.attributes.messageType,
+      position.attributes.option1 ? 'opt1: ' + position.attributes.option1 : '',
+      position.attributes.option2 ? 'opt2: ' + position.attributes.option2 : '',
+      position.attributes.option3 ? 'opt3: ' + position.attributes.option3 : '',
+      position.attributes.option4 ? 'opt4: ' + position.attributes.option4 : ''
+    )
 
     const data = {
       device,
@@ -61,19 +59,19 @@ exports.processTacho = async ({ device, position }) => {
         { auth: { username: process.env.TRACCAR_ADMIN_USER, password: process.env.TRACCAR_ADMIN_PASS } }
       )
     } else if (position.attributes.messageType === 1) {
-      console.log('tacho', device.name, 'Reply for DDD file request',
+      console.log('tacho', device.name, 'Authorization result:',
         {
-          0: 'Authorization OK.',
-          1: 'Authorization fail.',
-          2: 'Authorization timeout.',
-          3: '3: Authorization data error.'
+          0: 'Authorization OK',
+          1: 'Authorization failed',
+          2: 'Authorization timeout',
+          3: 'Authorization data error'
         }[position.attributes.option1], getDeviceStatus(position.attributes.option2),
         errorCodes[position.attributes.option4] || position.attributes.option4
       )
       const url = 'http://tacho.fleetmap.pt:8080/release'
       try { await post(url, data, { timeout: 5000 }) } catch (e) { console.error('tacho', device.name, url, data, e) }
     } else if (position.attributes.messageType === 0) {
-      console.log('tacho', device.name, 'Reply for DDD file request',
+      console.log('tacho', device.name, 'DDD file request reply:',
         {
           0: 'Request OK',
           1: 'Request busy: Advanced test',
