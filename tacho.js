@@ -1,6 +1,7 @@
 const { post } = require('axios')
 
 const errorCodes = {
+  '02': '02 - No communication with tachograph. Switch the ignition on and try again. If it does not help, check out CANBUS connection to tachograph',
   '0F':' 0F - No response after sending ATR',
   '41': '41 - Error opening session',
   '6C': '6C - APDU error',
