@@ -1,9 +1,10 @@
 const { post } = require('axios')
 
 const errorCodes = {
-  '41': 'Error opening session. Report to the device producer',
-  '6C': 'APDU error. Report to the device producer',
-  '6E': 'Authentication error. Check if company card is not expired. If not, report to the device producer'
+  '0F':' 0F - No response after sending ATR',
+  '41': '41 - Error opening session',
+  '6C': '6C - APDU error',
+  '6E': '6E - Authentication error. Check if company card is not expired. If not, report to the device producer'
 }
 
 function getDeviceStatus (_status) {
