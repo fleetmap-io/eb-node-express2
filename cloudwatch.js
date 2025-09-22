@@ -30,7 +30,9 @@ async function processLines () {
   for (const jsonStr of lines) {
     try {
       if (jsonStr.includes('"fixTime":"2025-09-22T07') || jsonStr.includes('"fixTime":"2025-09-22T08' || jsonStr.includes('"fixTime":"2025-09-22T09'))) {
-        await rabbit.send(jsonStr, 'E', 'P', 'eb-node-express-positions')
+        if (counter > 133779) {
+          await rabbit.send(jsonStr, 'E', 'P', 'eb-node-express-positions')
+        }
         console.log(counter++)
       }
     } catch (err) {
