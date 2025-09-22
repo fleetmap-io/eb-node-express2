@@ -19,17 +19,21 @@ rl.on('line', (line) => {
     const idx = line.indexOf('{')
     if (idx === -1) return // skip if no JSON
     const jsonStr = line.slice(idx)
-    lines.push(jsonStr)
+    if (regExp.test(jsonStr)) {
+      lines.push(jsonStr)
+    }
   } catch (err) {
     console.error('Parse error:', err.message)
   }
 })
 
 let counter = 0
+
+const regExp = /"fixTime":"(2025-09-22T10[^"]*)"/
 async function processLines () {
   for (const jsonStr of lines) {
     try {
-      const match = jsonStr.match(/"fixTime":"(2025-09-22T10[^"]*)"/)
+      const match = jsonStr.match(regExp)
       if (match) {
         await rabbit.send(jsonStr, 'E', 'P', 'eb-node-express-positions')
         console.log(counter++, match[1])
