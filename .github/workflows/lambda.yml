@@ -1,0 +1,26 @@
+name: deploy
+
+on:
+  push:
+    branches: [ "dev" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+      - run: npm ci
+      - run: zip -r deploy.zip . -x '*.git*'
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_1 }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_1 }}
+          aws-region: us-east-1
+
+      - name: Deploy to Lambda
+        run: |
+          aws lambda update-function-code \
+            --function-name recover-positions-from-log \
+            --zip-file fileb://deploy.zip
