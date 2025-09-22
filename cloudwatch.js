@@ -29,11 +29,10 @@ let counter = 0
 async function processLines () {
   for (const jsonStr of lines) {
     try {
-      if (jsonStr.includes('"fixTime":"2025-09-22T07') || jsonStr.includes('"fixTime":"2025-09-22T08' || jsonStr.includes('"fixTime":"2025-09-22T09'))) {
-        if (counter > 227834) {
-          await rabbit.send(jsonStr, 'E', 'P', 'eb-node-express-positions')
-        }
-        console.log(counter++)
+      const match = jsonStr.match(/"fixTime":"(2025-09-22T10[^"]*)"/)
+      if (match) {
+        await rabbit.send(jsonStr, 'E', 'P', 'eb-node-express-positions')
+        console.log(counter++, match[1])
       }
     } catch (err) {
       console.error('Send error:', err.message)
@@ -41,9 +40,9 @@ async function processLines () {
   }
 }
 
-rl.on('close', async () => {
+rl.on('close', () => {
   console.log('Finished parsing log file.')
-  processLines()
+  processLines().then(() => console.log('Finished processing lines.'))
 })
 
 rl.on('error', (e) => {
