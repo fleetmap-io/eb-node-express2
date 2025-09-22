@@ -24,3 +24,6 @@ jobs:
           aws lambda update-function-code \
             --function-name recover-positions-from-log \
             --zip-file fileb://deploy.zip
+          aws lambda update-function-configuration \
+            --function-name recover-positions-from-log \
+            --handler cloudwatch-logs.handler
