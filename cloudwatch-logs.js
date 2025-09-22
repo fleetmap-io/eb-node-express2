@@ -52,3 +52,7 @@ rl.on('close', () => {
 rl.on('error', (e) => {
   console.log('error', e)
 })
+
+export function lambda (e) {
+  console.log(e)
+}
