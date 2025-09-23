@@ -50,7 +50,10 @@ export function main () {
 
   rl.on('close', () => {
     console.log('Finished parsing log file.')
-    processLines().then(() => console.log('Finished processing lines.'))
+    processLines().then(() => {
+      console.log('Finished processing lines.')
+      rabbit.close().catch(() => console.log('rabbit closed'))
+    })
   })
 
   rl.on('error', (e) => {
@@ -61,5 +64,4 @@ export function main () {
 // Run main function if this file is executed directly
 if (import.meta.url === `file://${process.argv[1]}`) {
   main()
-  setTimeout(rabbit.close, 20000)
 }
