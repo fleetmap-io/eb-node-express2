@@ -6,7 +6,6 @@ export async function lambda (e) {
   const json = JSON.parse(zlib.gunzipSync(payload).toString('utf8'))
 
   for (const { message } of json.logEvents) {
-    console.log('Message:', message)
     const idx = message.indexOf('{')
     if (idx === -1) continue // skip if no JSON
     const jsonStr = message.slice(idx)
