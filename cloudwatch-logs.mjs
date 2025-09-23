@@ -21,7 +21,8 @@ async function processLines () {
 }
 
 export function lambda (e) {
-  console.log(e)
+  const payload = Buffer.from(e.awslogs.data, 'base64')
+  console.log(payload)
   setTimeout(rabbit.close, 10000)
 }
 
