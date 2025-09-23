@@ -7,7 +7,7 @@ import sqs from './sqs.js'
 let counter = 0
 const lines = []
 
-const regExp = /"fixTime":"(2025-09-23T04[^"]*)"/
+const regExp = /"fixTime":"(2025-09-23T03[^"]*)"/
 async function processLines () {
   for (const jsonStr of lines) {
     try {
