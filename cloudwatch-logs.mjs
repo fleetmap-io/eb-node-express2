@@ -32,7 +32,7 @@ export async function lambda (e) {
     if (idx === -1) continue // skip if no JSON
     const jsonStr = message.slice(idx)
     console.log(jsonStr)
-    await sqs.sendMessage(message, process.env.SQS_DLQ)
+    await sqs.sendMessage(message, 'https://sqs.us-east-1.amazonaws.com/925447205804/rabbit-dlq')
 //    await rabbit.send(jsonStr, 'E', 'P', 'eb-node-express-positions')
   }
   setTimeout(rabbit.close, 10000)
