@@ -2,7 +2,7 @@ import fs from 'fs'
 import readline from 'readline'
 import rabbit from './rabbit.js'
 import zlib from 'zlib'
-import sqs from "./sqs.js";
+import sqs from './sqs.js'
 
 let counter = 0
 const lines = []
@@ -33,7 +33,7 @@ export async function lambda (e) {
     const jsonStr = message.slice(idx)
     console.log(jsonStr)
     await sqs.sendMessage(message, 'https://sqs.us-east-1.amazonaws.com/925447205804/rabbit-dlq')
-//    await rabbit.send(jsonStr, 'E', 'P', 'eb-node-express-positions')
+    //    await rabbit.send(jsonStr, 'E', 'P', 'eb-node-express-positions')
   }
   setTimeout(rabbit.close, 10000)
 }
@@ -41,7 +41,7 @@ export async function lambda (e) {
 export function main () {
   console.log('Starting CloudWatch logs processing...')
 
-  const logFile = 'positions.txt'
+  const logFile = '/opt/traccar/logs/tracker-server.log'
 
   const rl = readline.createInterface({
     input: fs.createReadStream(logFile),
