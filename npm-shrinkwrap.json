@@ -1,12 +1,12 @@
 {
   "name": "eb-node-express",
-  "version": "1.0.2",
+  "version": "1.0.4",
   "lockfileVersion": 2,
   "requires": true,
   "packages": {
     "": {
       "name": "eb-node-express",
-      "version": "1.0.2",
+      "version": "1.0.4",
       "dependencies": {
         "@aws-sdk/client-sqs": "latest",
         "amqplib": "^0.10.3",

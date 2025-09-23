@@ -1,8 +1,6 @@
 import fs from 'fs'
 import readline from 'readline'
 import rabbit from './rabbit.js'
-import zlib from 'zlib'
-import sqs from './sqs.js'
 
 let counter = 0
 const lines = []
@@ -20,22 +18,6 @@ async function processLines () {
       console.error('Send error:', err.message)
     }
   }
-}
-
-export async function lambda (e) {
-  const payload = Buffer.from(e.awslogs.data, 'base64')
-  const json = JSON.parse(zlib.gunzipSync(payload).toString('utf8'))
-
-  for (const { message } of json.logEvents) {
-    console.log('Message:', message)
-    const idx = message.indexOf('{')
-    if (idx === -1) continue // skip if no JSON
-    const jsonStr = message.slice(idx)
-    console.log(jsonStr)
-    await sqs.sendMessage(message, 'https://sqs.us-east-1.amazonaws.com/925447205804/rabbit-dlq')
-    //    await rabbit.send(jsonStr, 'E', 'P', 'eb-node-express-positions')
-  }
-  setTimeout(rabbit.close, 10000)
 }
 
 export function main () {

@@ -23,7 +23,7 @@ jobs:
         run: |
           aws lambda update-function-configuration \
             --function-name recover-positions-from-log \
-            --handler cloudwatch-logs.lambda
+            --handler lambda.lambda
           
           aws lambda update-function-code \
             --function-name recover-positions-from-log \
