@@ -22,6 +22,7 @@ async function processLines () {
 
 export function lambda (e) {
   console.log(e)
+  setTimeout(rabbit.close, 10000)
 }
 
 export function main () {
