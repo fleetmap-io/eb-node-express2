@@ -7,12 +7,12 @@ import sqs from './sqs.js'
 let counter = 0
 const lines = []
 
-const regExp = /"fixTime":"(2025-09-22T18[^"]*)"/
+const regExp = /"fixTime":"(2025-09-23T04[^"]*)"/
 async function processLines () {
   for (const jsonStr of lines) {
     try {
       const match = jsonStr.match(regExp)
-      if (match && match[1] > '2025-09-22T18:00') {
+      if (match) {
         await rabbit.send(jsonStr, 'E', 'P', 'eb-node-express-positions')
         console.log(counter++, match[1])
       }
