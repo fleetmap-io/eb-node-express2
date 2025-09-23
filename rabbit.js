@@ -1,6 +1,6 @@
 const amqplib = require('amqplib')
 let _connection = null
-let _channel = getChannel('eb-node-express-2')
+let _channel = getChannel('logs-processor')
   .catch(e => console.error('ERROR INIT _channel', e.message))
 createQueues()
   .catch(e => console.error('ERROR INIT createQueues', e.message))
