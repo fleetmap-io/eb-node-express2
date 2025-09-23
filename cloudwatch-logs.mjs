@@ -23,7 +23,7 @@ async function processLines () {
 
 export function lambda (e) {
   const payload = Buffer.from(e.awslogs.data, 'base64')
-  const data = zlib.gunzipSync(payload).toString("utf8")
+  const data = zlib.gunzipSync(payload).toString('utf8')
   console.log(data)
   setTimeout(rabbit.close, 10000)
 }
