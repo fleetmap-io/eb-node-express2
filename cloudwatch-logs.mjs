@@ -21,12 +21,17 @@ async function processLines () {
   }
 }
 
-export function lambda (e) {
+export async function lambda (e) {
   const payload = Buffer.from(e.awslogs.data, 'base64')
   const json = JSON.parse(zlib.gunzipSync(payload).toString('utf8'))
 
-  for (const logEvent of json.logEvents) {
-    console.log('Message:', logEvent.message)
+  for (const { message } of json.logEvents) {
+    console.log('Message:', message)
+    const idx = message.indexOf('{')
+    if (idx === -1) continue // skip if no JSON
+    const jsonStr = message.slice(idx)
+    console.log(jsonStr)
+    await rabbit.send(jsonStr, 'E', 'P', 'eb-node-express-positions')
   }
   setTimeout(rabbit.close, 10000)
 }
