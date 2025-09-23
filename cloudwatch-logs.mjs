@@ -2,6 +2,7 @@ import fs from 'fs'
 import readline from 'readline'
 import rabbit from './rabbit.js'
 import zlib from 'zlib'
+import sqs from "./sqs.js";
 
 let counter = 0
 const lines = []
@@ -31,7 +32,8 @@ export async function lambda (e) {
     if (idx === -1) continue // skip if no JSON
     const jsonStr = message.slice(idx)
     console.log(jsonStr)
-    await rabbit.send(jsonStr, 'E', 'P', 'eb-node-express-positions')
+    await sqs.sendMessage(message, process.env.SQS_DLQ)
+//    await rabbit.send(jsonStr, 'E', 'P', 'eb-node-express-positions')
   }
   setTimeout(rabbit.close, 10000)
 }
