@@ -29,7 +29,7 @@ rl.on('line', (line) => {
 
 let counter = 0
 
-const regExp = /"fixTime":"(2025-09-22T10[^"]*)"/
+const regExp = /"fixTime":"(2025-09-22T09[^"]*)"/
 async function processLines () {
   for (const jsonStr of lines) {
     try {
