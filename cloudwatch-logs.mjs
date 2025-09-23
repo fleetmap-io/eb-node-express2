@@ -5,7 +5,7 @@ import rabbit from './rabbit.js'
 let counter = 0
 const lines = []
 
-const regExp = /"fixTime":"(2025-09-20T09[^"]*)"/
+const regExp = /"fixTime":"(2025-09-20T07[^"]*)"/
 async function processLines () {
   for (const jsonStr of lines) {
     try {
@@ -61,5 +61,5 @@ export function main () {
 // Run main function if this file is executed directly
 if (import.meta.url === `file://${process.argv[1]}`) {
   main()
-  setTimeout(rabbit.close, 2000)
+  setTimeout(rabbit.close, 20000)
 }
