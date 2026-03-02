@@ -124,6 +124,6 @@ if (cluster.isMaster) {
   const port = process.env.PORT || 3000
   app.listen(port, async function () {
     await _instanceId
-    console.log(`${instanceId()} worker ${cluster.worker.id} running at http://127.0.0.1:${port}/`)
+    console.log(`${instanceId()} worker ${cluster.worker.id} running v1 at http://127.0.0.1:${port}/`)
   })
 }
