@@ -1,9 +1,8 @@
 const amqplib = require('amqplib')
 let _connection = null
 let _channel = getChannel('eb-node-express-2')
-  .catch(e => console.error('ERROR INIT _channel', e.message))
-createQueues()
-  .catch(e => console.error('ERROR INIT createQueues', e.message))
+
+createQueues().then(() => console.log('rabbit queues created'))
 
 function createQueues () {
   return _createQueues('E', 'positions', 'P', 'events', 'E', 'positions-integration', 'PI')
