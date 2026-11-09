@@ -45,9 +45,9 @@ exports.close = close
 async function getChannel (name) {
   await close()
   _connection = await amqplib.connect({
-    hostname: 'b-61050384-36ce-4afd-8f00-03e15a27c7bd.mq.us-east-1.on.aws',
-    port: 5671,
-    protocol: 'amqps',
+    hostname: '178.156.200.13',
+    port: 5672,
+    protocol: 'amqp',
     username: 'rabbit',
     password: process.env.RABBIT_PASS
   }, {
