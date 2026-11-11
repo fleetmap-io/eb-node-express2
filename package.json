@@ -3,6 +3,7 @@
   "version": "1.0.4",
   "private": true,
   "dependencies": {
+    "@aws-sdk/client-secrets-manager": "^3.1166.0",
     "@aws-sdk/client-sqs": "latest",
     "amqplib": "^0.10.3",
     "axios": "^1.6.7",

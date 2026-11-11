@@ -1,6 +1,17 @@
 const amqplib = require('amqplib')
+const { SecretsManagerClient, GetSecretValueCommand } = require('@aws-sdk/client-secrets-manager')
+const secretsClient = new SecretsManagerClient({ region: 'us-east-1' })
 let _connection = null
+let _rabbitConfig = null
 let _channel = getChannel('eb-node-express-2')
+
+async function getRabbitConfig () {
+  if (!_rabbitConfig) {
+    const { SecretString } = await secretsClient.send(new GetSecretValueCommand({ SecretId: 'rabbit2' }))
+    _rabbitConfig = JSON.parse(SecretString)
+  }
+  return _rabbitConfig
+}
 
 createQueues().then(() => console.log('rabbit queues created'))
 
@@ -44,12 +55,13 @@ exports.close = close
 
 async function getChannel (name) {
   await close()
+  const config = await getRabbitConfig()
   _connection = await amqplib.connect({
-    hostname: '178.156.200.13',
-    port: 5672,
-    protocol: 'amqp',
-    username: 'rabbit',
-    password: process.env.RABBIT_PASS
+    hostname: config.host,
+    port: Number(config.port),
+    protocol: config.use_ssl === 'true' ? 'amqps' : 'amqp',
+    username: config.username,
+    password: config.password
   }, {
     clientProperties: { connection_name: name }
   })
