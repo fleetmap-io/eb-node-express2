@@ -24,7 +24,7 @@ async function _createQueues (exchange, positionsQueue, positionsKey, eventsQueu
   channel.assertExchange(exchange, 'direct', { durable: true, autoDelete: false })
   await createQueue(positionsQueue, exchange, positionsKey)
   await createQueue(eventsQueue, exchange, eventsKey)
-  await createIntegrationQueue(positionsIntegrationQueue, exchange, positionsIntegrationKey)
+  await createQueue(positionsIntegrationQueue, exchange, positionsIntegrationKey)
 }
 
 async function createQueue (queueName, exchange, routingKey) {
@@ -32,12 +32,6 @@ async function createQueue (queueName, exchange, routingKey) {
   const deadLetter = 'z_dead_' + queueName
   await channel.assertQueue(deadLetter, { durable: true })
   await channel.assertQueue(queueName, { durable: true, deadLetterExchange: '', deadLetterRoutingKey: deadLetter })
-  await channel.bindQueue(queueName, exchange, routingKey)
-}
-
-async function createIntegrationQueue (queueName, exchange, routingKey) {
-  const channel = await _channel
-  await channel.assertQueue(queueName, { durable: true, maxLength: 500000 })
   await channel.bindQueue(queueName, exchange, routingKey)
 }
 
