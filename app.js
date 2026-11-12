@@ -84,7 +84,7 @@ if (cluster.isMaster) {
       if (device && device.attributes.integration) {
         const integrations = device.attributes.integration
           .split(',')
-          .map(i => i.trim())
+          .map(i => i.trim().toLowerCase())
           .filter(Boolean)
         if (integrations.length) {
           rabbitHeaders = { CC: ['PI', ...integrations.map(i => 'I-' + i)] }
