@@ -82,8 +82,16 @@ if (cluster.isMaster) {
         await processTacho({ device, position })
       }
       if (device && device.attributes.integration) {
-        rabbitHeaders = { CC: ['PI', 'I-' + device.attributes.integration] }
-        await rabbit.ensureIntegrationQueue(device.attributes.integration)
+        const integrations = device.attributes.integration
+          .split(',')
+          .map(i => i.trim())
+          .filter(Boolean)
+        if (integrations.length) {
+          rabbitHeaders = { CC: ['PI', ...integrations.map(i => 'I-' + i)] }
+          for (const integration of integrations) {
+            await rabbit.ensureIntegrationQueue(integration)
+          }
+        }
       }
       position.attributes.source ||= 'eu-west-3'
       await rabbit.send(JSON.stringify(req.body), 'E', 'P', 'eb-node-express-positions', rabbitHeaders)
