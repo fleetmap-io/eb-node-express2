@@ -81,8 +81,9 @@ if (cluster.isMaster) {
       if (device && device.attributes.can === 3) {
         await processTacho({ device, position })
       }
-      if (device && (device.attributes.integration || device.attributes.can === 3)) {
-        rabbitHeaders = { CC: ['PI'] }
+      if (device && device.attributes.integration) {
+        rabbitHeaders = { CC: ['PI', 'I-' + device.attributes.integration] }
+        await rabbit.ensureIntegrationQueue(device.attributes.integration)
       }
       position.attributes.source ||= 'eu-west-3'
       await rabbit.send(JSON.stringify(req.body), 'E', 'P', 'eb-node-express-positions', rabbitHeaders)

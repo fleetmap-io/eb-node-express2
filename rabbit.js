@@ -35,6 +35,17 @@ async function createQueue (queueName, exchange, routingKey) {
   await channel.bindQueue(queueName, exchange, routingKey)
 }
 
+const _integrationQueues = new Set()
+
+async function ensureIntegrationQueue (integration) {
+  const queueName = 'i-' + integration
+  if (_integrationQueues.has(queueName)) return
+  await createQueue(queueName, 'E', 'I-' + integration)
+  _integrationQueues.add(queueName)
+}
+
+exports.ensureIntegrationQueue = ensureIntegrationQueue
+
 async function close () {
   if (_connection) {
     try {
