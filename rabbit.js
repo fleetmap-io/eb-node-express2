@@ -16,7 +16,7 @@ async function getRabbitConfig () {
 createQueues().then(() => console.log('rabbit queues created'))
 
 function createQueues () {
-  return _createQueues('E', 'Positions', 'P', 'Events', 'E', 'positions-integration', 'PI')
+  return _createQueues('E', 'Positions', 'P', 'Events', 'E', 'Positions-integration', 'PI')
 }
 
 async function _createQueues (exchange, positionsQueue, positionsKey, eventsQueue, eventsKey, positionsIntegrationQueue, positionsIntegrationKey) {
