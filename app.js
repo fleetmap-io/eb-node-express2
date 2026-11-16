@@ -87,7 +87,7 @@ if (cluster.isMaster) {
           .map(i => i.trim().toLowerCase())
           .filter(Boolean)
         if (integrations.length) {
-          rabbitHeaders = { CC: ['PI', ...integrations.map(i => 'I-' + i)] }
+          rabbitHeaders = { CC: integrations.map(i => 'I-' + i) }
           for (const integration of integrations) {
             await rabbit.ensureIntegrationQueue(integration)
           }
