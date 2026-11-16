@@ -16,15 +16,14 @@ async function getRabbitConfig () {
 createQueues().then(() => console.log('rabbit queues created'))
 
 function createQueues () {
-  return _createQueues('E', 'Positions', 'P', 'Events', 'E', 'Positions-integration', 'PI')
+  return _createQueues('E', 'Positions', 'P', 'Events', 'E')
 }
 
-async function _createQueues (exchange, positionsQueue, positionsKey, eventsQueue, eventsKey, positionsIntegrationQueue, positionsIntegrationKey) {
+async function _createQueues (exchange, positionsQueue, positionsKey, eventsQueue, eventsKey) {
   const channel = await _channel
   channel.assertExchange(exchange, 'direct', { durable: true, autoDelete: false })
   await createQueue(positionsQueue, exchange, positionsKey)
   await createQueue(eventsQueue, exchange, eventsKey)
-  await createQueue(positionsIntegrationQueue, exchange, positionsIntegrationKey)
 }
 
 async function createQueue (queueName, exchange, routingKey) {
