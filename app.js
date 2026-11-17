@@ -39,7 +39,8 @@ if (cluster.isMaster) {
   const express = require('express')
   const bodyParser = require('body-parser')
   const app = express()
-  app.use(bodyParser.json())
+  // default is 100kb; camera file lists (0x9205 videoResources) can be 350KB+
+  app.use(bodyParser.json({ limit: '2mb' }))
 
   // load balancer health check
   app.get('/', async (req, res) => {
